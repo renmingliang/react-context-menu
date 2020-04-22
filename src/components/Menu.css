@@ -41,7 +41,7 @@
 .JfMenu .list li:last-child:hover {
   border-radius: 0 0 4px 4px;
 }
-.JfMenu .list li.only:hover {
+.JfMenu .list li:only-child:hover {
   border-radius: 4px;
 }
 

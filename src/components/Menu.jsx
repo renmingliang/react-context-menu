@@ -85,7 +85,7 @@ class JfMenu extends Component {
             renderList.map((item, index) => {
               const child = item.children;
               return (
-                <li className={`${renderList.length === 1 ? 'only' : ''}`}
+                <li
                   key={index}
                   onClick={(e) => this.itemClick(e, item, index, [index])}>
                   <span>{item.title}</span>
@@ -99,7 +99,6 @@ class JfMenu extends Component {
                               child.map((sub, ind) => {
                                 return (
                                   <li
-                                    className={`${child.length === 1 ? 'only' : ''}`}
                                     key={ind}
                                     onClick={(e) => this.itemClick(e, sub, ind, [index, ind])}>{sub.title}</li>
                                 )
