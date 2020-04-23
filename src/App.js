@@ -26,7 +26,23 @@ function App() {
     e.preventDefault();
 
     utilMenu.show(e, {
-      list: DEFAULT_MENUS,
+      options: DEFAULT_MENUS,
+      className: 'contextMenu',
+      onShow: () => {
+        console.log('contextMenu ==> 显示');
+      },
+      onHide: () => {
+        console.log('contextMenu ==> 隐藏');
+      },
+      onClick: (item, key, keyPath) => {
+        console.log('contextMenu ==> 点击', item, key, keyPath);
+      }
+    })
+  }
+
+  const showMenu = (e) => {
+    utilMenu.show(e, {
+      options: DEFAULT_MENUS,
       onShow: () => {
         console.log('menu ==> 显示');
       },
@@ -40,12 +56,10 @@ function App() {
   }
 
   return (
-    <div className="App" onContextMenu={getContextMenu}>
-      <header className="App-header">
+    <div className="App">
+      <header className="App-header" onContextMenu={getContextMenu}>
         <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
+        <p><code>鼠标右键点击显示菜单</code></p>
         <a
           className="App-link"
           href="https://reactjs.org"
@@ -55,6 +69,7 @@ function App() {
           Learn React
         </a>
       </header>
+      <div onClick={showMenu}>鼠标左键点击显示菜单</div>
     </div>
   );
 }

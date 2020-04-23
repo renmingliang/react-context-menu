@@ -3,21 +3,26 @@
   position: absolute;
   z-index: 200;
 }
-.JfMenu.subMenu {
-  visibility: hidden;
-  left: calc(100% - 2px);
-  top: 0;
-}
 
 .JfMenu .list {
+  cursor: pointer;
+  border-radius: 4px;
+  background-color: #ffffff;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.JfMenu.Show .list {
+  background-color: #fafafa;
+}
+
+.JfMenu .list ul {
   margin: 0;
   padding: 0;
   list-style: none;
-  cursor: pointer;
-  border-radius: 4px;
-  background-color: #fafafa;
+  text-align: left;
   box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.2);
 }
+
 .JfMenu .list li {
   color: #333333;
   position: relative;
@@ -31,9 +36,6 @@
 .JfMenu .list li:hover {
   background: #4fa0f1;
   color: #fff;
-}
-.JfMenu .list li:hover .subMenu{
-  visibility: visible;
 }
 .JfMenu .list li:first-child:hover {
   border-radius: 4px 4px 0 0;

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 
 import { getRect } from '../utils/dom';
 import './Menu.css';
@@ -16,34 +17,57 @@ class JfMenu extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      show: false,
-      list: null
+      show: false
     };
 
+    this.show = this.show.bind(this);
     this.hide = this.hide.bind(this);
+    this.onHoverMenuItem = this.onHoverMenuItem.bind(this);
+    this.onLeaveMenuItem = this.onLeaveMenuItem.bind(this);
   }
 
-  showAt(position, params) {
-    const { left, top } = position;
-    const { width: panelWidth, height: panelHeight } = getRect(this.menuRef);
-    const { innerHeight: globalHeight, innerWidth: globalWidth } = window;
+  isRootMenu() {
+    return !this.props.parent
+  }
 
-    let showLeft = left + 5, showTop = top + 5;
-    if (panelWidth + left + 10 > globalWidth) {
-      showLeft = left - panelWidth - 5;
-    }
-    if (panelHeight + top + 10 > globalHeight) {
-      showTop = top - panelHeight - 5;
+  showAt(e, params) {
+    let o = 0, a = 0;
+    let r = e.left, n = e.top;
+    const $el = ReactDOM.findDOMNode(this);
+    const { width: panelWidth, height: panelHeight } = getRect($el);
+    const { innerWidth: globalWidth, innerHeight: globalHeight } = window;
+
+    if (!params) {
+      const s = getRect($el.parentNode);
+      o = s.left;
+      a = s.top;
     }
 
-    const { list } = params;
+    if (o + r + panelWidth > document.body.scrollLeft + globalWidth) {
+      r = r - panelWidth - 2;
+    } else {
+      r += 2;
+    }
+
+    if (a + n + panelHeight > document.body.scrollTop + globalHeight) {
+      n = n - panelHeight - 2;
+    } else {
+      n += 2;
+    }
+
     this.setState({
       show: true,
-      list: list,
-      positon: {
-        left: showLeft,
-        top: showTop
-      }
+      position: {
+        left: r,
+        top: n
+      },
+      className: params && params.className ? params.className : ""
+    });
+  }
+
+  show() {
+    this.setState({
+      show: true
     });
   }
 
@@ -51,10 +75,9 @@ class JfMenu extends Component {
     this.setState({
       show: false
     }, () => {
-      typeof this.props.onHide === 'function' && this.props.onHide();
-      // 是否强制摧毁
       if (status) {
-        typeof this.props.afterHide === 'function' && this.props.afterHide();
+        const t = this.props.parent;
+        t ? t.hide(status) : "function" == typeof this.props.afterHide && this.props.afterHide();
       }
     });
   }
@@ -71,51 +94,77 @@ class JfMenu extends Component {
     }
   }
 
+  onHoverMenuItem(e) {
+    const t = e.currentTarget.dataset.idx,
+      r = this.refs["child-" + t],
+      n = ReactDOM.findDOMNode(this);
+    r && r.showAt({ left: n.clientWidth - 4, top: 0 })
+  }
+
+  onLeaveMenuItem(e) {
+    const t = e.currentTarget.dataset.idx,
+      r = this.refs["child-" + t];
+    r && r.hide()
+  }
+
   render() {
-    // 待优化 - 可采用递归渲染组件dom - 目前仅支持两级
-    const { show, positon, list } = this.state;
-    const styleObj = show ? positon : DEFAULT_POSITION;
-    const renderList = list || this.props.list;
-    return (
-      <div
-        ref={node => this.menuRef = node}
-        className={`JfMenu contextMenu ${show ? 'Show' : 'Hide'}`} style={styleObj}>
-        <ul className="list">
-          {
-            renderList.map((item, index) => {
-              const child = item.children;
-              return (
-                <li
-                  key={index}
-                  onClick={(e) => this.itemClick(e, item, index, [index])}>
-                  <span>{item.title}</span>
-                  {
-                    child && child.length ? (
-                      <React.Fragment>
-                        <i className="icon-more"></i>
-                        <div className="JfMenu subMenu">
-                          <ul className="list">
-                            {
-                              child.map((sub, ind) => {
-                                return (
-                                  <li
-                                    key={ind}
-                                    onClick={(e) => this.itemClick(e, sub, ind, [index, ind])}>{sub.title}</li>
-                                )
-                              })
-                            }
-                          </ul>
-                        </div>
-                      </React.Fragment>
-                    ) : null
-                  }
-                </li>
-              )
-            })
+    let e = null, r = "JfMenu " + (this.state.show ? "Show" : "Hide"), n = this.state.options || this.props.options, o = this.state.position || this.props.position, a = [];
+
+    if (n) {
+      let s;
+      for (let c = 0; c < n.length; c++) {
+        let l, p = n[c], d = p, f = null;
+        let y = "";
+        if (p && typeof p === "object") {
+          d = [p.title];
+          p.checked && (y = "on");
+          let h = Array.isArray(p.children);
+          if (h) {
+            d.push(<i className="icon-more" key={"gt" + c }></i>);
+            f = <JfMenu
+              ref={"child-" + c}
+              idx={c}
+              options={p.children}
+              parent={this}
+              />
           }
-        </ul>
+
+          l = p.style;
+          p.disabled && (y += " disabled");
+        }
+
+        s = <li
+          className={y}
+          key={c}
+          style={l}
+          data-idx={c}
+          onMouseEnter={this.onHoverMenuItem}
+          onMouseLeave={this.onLeaveMenuItem}
+          onClick={(e) => this.itemClick(e, p, c, [c])}>
+          {d}
+          {f}
+        </li>;
+
+
+        a.push(s);
+      }
+
+      e = <div className="list">
+        <ul>{a}</ul>
       </div>
-    )
+    }
+
+    this.state.show || (o = DEFAULT_POSITION);
+
+    if (this.state.className) {
+      r += " " + this.state.className;
+    } else {
+      if (this.props.className) {
+        r += " " + this.props.className;
+      }
+    }
+
+    return <div className={r} style={o}>{e}</div>;
   }
 }
 
