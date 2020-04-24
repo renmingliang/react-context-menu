@@ -22,7 +22,7 @@ class UtilMenu {
 
   outerClick(e) {
     if (this.menu) {
-      var t = ReactDOM.findDOMNode(this.menu)
+      const t = ReactDOM.findDOMNode(this.menu)
         , r = document.body.scrollLeft + e.clientX
         , n = document.body.scrollTop + e.clientY
         , o = t.offsetLeft
@@ -33,22 +33,30 @@ class UtilMenu {
     }
   }
 
-  show(e, params = {}) {
+  show(e, t, r) {
     if (!this.menu) {
-      this.init(params);
+      this.init(t);
     }
 
-    const position = {
-      left: document.body.scrollLeft + e.clientX,
-      top: document.body.scrollTop + e.clientY
-    };
-
-    if (!this.menu) {
-      console.log('dialog ==> 该功能不支持无状态组件调用');
-      return false;
+    let n;
+    if (t.position) {
+      n = t.position;
+    } else {
+      n = {
+        left: document.body.scrollLeft + e.clientX,
+        top: document.body.scrollTop + e.clientY
+      };
     }
 
-    this.menu.showAt(position, params);
+    this.menu.showAt(n, {
+      options: t.options,
+      className: t.className,
+      cbk: function () {
+        let len = arguments.length, args = Array(len);
+        for (let i = 0; i < len; i++) args[i] = arguments[i];
+        return r.apply(null, args)
+      }
+    });
     document.addEventListener('click', this.outerClick);
   }
 

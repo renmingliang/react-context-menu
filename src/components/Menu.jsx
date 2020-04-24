@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
-import { getRect } from '../utils/dom';
 import './Menu.css';
 
 const DEFAULT_POSITION = {
   top: -9999,
   left: -9999
 }
+
+const MENU_ITEM_HEIGHT = 30;
 
 /**
  * 菜单面板
@@ -22,6 +23,7 @@ class JfMenu extends Component {
 
     this.show = this.show.bind(this);
     this.hide = this.hide.bind(this);
+    this.onClick = this.onClick.bind(this);
     this.onHoverMenuItem = this.onHoverMenuItem.bind(this);
     this.onLeaveMenuItem = this.onLeaveMenuItem.bind(this);
   }
@@ -30,39 +32,49 @@ class JfMenu extends Component {
     return !this.props.parent
   }
 
-  showAt(e, params) {
+  showAt(e, t) {
     let o = 0, a = 0;
     let r = e.left, n = e.top;
     const $el = ReactDOM.findDOMNode(this);
-    const { width: panelWidth, height: panelHeight } = getRect($el);
+    const { width: panelWidth } = $el.getBoundingClientRect();
     const { innerWidth: globalWidth, innerHeight: globalHeight } = window;
 
-    if (!params) {
-      const s = getRect($el.parentNode);
+    if (!t) {
+      const s = $el.parentNode.getBoundingClientRect();
       o = s.left;
       a = s.top;
     }
 
-    if (o + r + panelWidth > document.body.scrollLeft + globalWidth) {
-      r = r - panelWidth - 2;
-    } else {
-      r += 2;
+    o + r + panelWidth > document.body.scrollLeft + globalWidth
+      ? r = t ? document.documentElement.clientWidth - panelWidth : 2 - panelWidth
+      : r += 2;
+
+    // 由于不同菜单项对应的高度不一，这里通过子项数量 * 子项高度获取
+    let p = (t ? t.options : this.props.options).length * MENU_ITEM_HEIGHT;
+    if ("bottom" === e.align) {
+      n -= p;
+      n = Math.max(0, n);
+    };
+
+    if (a + n + p > document.body.scrollTop + globalHeight) {
+      if (!this.isRootMenu()) {
+        // 若不是根节点，则须减去该子项高度
+        p -= MENU_ITEM_HEIGHT;
+      }
+      n -= p;
+      n = Math.max(0 - a, n);
     }
 
-    if (a + n + panelHeight > document.body.scrollTop + globalHeight) {
-      n = n - panelHeight - 2;
-    } else {
-      n += 2;
-    }
-
-    this.setState({
+    const obj = Object.assign({}, {
       show: true,
       position: {
         left: r,
         top: n
       },
-      className: params && params.className ? params.className : ""
-    });
+      className: t && t.className ? t.className : ""
+    }, t);
+
+    this.setState(obj);
   }
 
   show() {
@@ -82,14 +94,26 @@ class JfMenu extends Component {
     });
   }
 
-  itemClick(e, item, key, keyPath) {
+  getItem(idx) {
+    return (this.state.options || this.props.options)[idx]
+  }
+
+  onClick(e) {
     e.stopPropagation();
     e.nativeEvent.stopImmediatePropagation();
-    if (!item || !item.disabled) {
-      const { onClick } = this.props;
-      // 回调点击事件
-      typeof onClick === 'function' && onClick(item, key, keyPath);
-      // 同时摧毁弹层
+    let t = parseInt(e.currentTarget.dataset.idx),
+      r = this,
+      n = this.props.parent,
+      o = [t],
+      a = this.getItem(t);
+    if (!a || !a.disabled) {
+      for (; n;) {
+        o.push(r.props.idx);
+        r = n;
+        n = n.props.parent;
+      }
+      o.reverse();
+      r.state.cbk(a, o);
       this.hide(true);
     }
   }
@@ -140,7 +164,7 @@ class JfMenu extends Component {
           data-idx={c}
           onMouseEnter={this.onHoverMenuItem}
           onMouseLeave={this.onLeaveMenuItem}
-          onClick={(e) => this.itemClick(e, p, c, [c])}>
+          onClick={this.onClick}>
           {d}
           {f}
         </li>;

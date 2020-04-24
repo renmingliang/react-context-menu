@@ -7,17 +7,43 @@ import utilMenu from './components/index';
 const DEFAULT_MENUS = [
   {
     title: '菜单1',
-    key: '1',
+    style: {color: 'rgb(202, 113, 42)'},
     children: [{
       title: '菜单1-1',
-      key: '1-1',
+      children: [{
+        title: '菜单1-1-1'
+      }]
     }]
   }, {
     title: '菜单2',
-    key: '2'
   }, {
     title: '菜单3',
-    key: '3'
+    children: [{
+      title: '菜单1-1',
+    }, {
+      title: '菜单1-1',
+    }, {
+      title: '菜单1-1',
+    }, {
+      title: '菜单1-1',
+    }, {
+      title: '菜单1-1',
+    }, {
+      title: '菜单1-1',
+    }, {
+      title: '菜单1-1',
+    }, {
+      title: '菜单1-1',
+    }, {
+      title: '菜单1-1',
+    }, {
+      title: '菜单1-1',
+    }, {
+      title: '菜单1-1',
+    }]
+  }, {
+    title: '菜单4（禁止点击）',
+    disabled: true
   }
 ]
 
@@ -27,31 +53,9 @@ function App() {
 
     utilMenu.show(e, {
       options: DEFAULT_MENUS,
-      className: 'contextMenu',
-      onShow: () => {
-        console.log('contextMenu ==> 显示');
-      },
-      onHide: () => {
-        console.log('contextMenu ==> 隐藏');
-      },
-      onClick: (item, key, keyPath) => {
-        console.log('contextMenu ==> 点击', item, key, keyPath);
-      }
-    })
-  }
-
-  const showMenu = (e) => {
-    utilMenu.show(e, {
-      options: DEFAULT_MENUS,
-      onShow: () => {
-        console.log('menu ==> 显示');
-      },
-      onHide: () => {
-        console.log('menu ==> 隐藏');
-      },
-      onClick: (item, key, keyPath) => {
-        console.log('menu ==> 点击', item, key, keyPath);
-      }
+      className: 'contextMenu'
+    }, function (item, key) {
+      console.log('contextMenu ==> 点击', item, key);
     })
   }
 
@@ -69,7 +73,6 @@ function App() {
           Learn React
         </a>
       </header>
-      <div onClick={showMenu}>鼠标左键点击显示菜单</div>
     </div>
   );
 }
