@@ -19,27 +19,25 @@ const DEFAULT_MENUS = [
   }, {
     title: '菜单3',
     children: [{
-      title: '菜单1-1',
+      title: '菜单3-1',
     }, {
-      title: '菜单1-1',
+      title: '菜单3-2',
     }, {
-      title: '菜单1-1',
+      title: '菜单3-3',
     }, {
-      title: '菜单1-1',
+      title: '菜单3-4',
     }, {
-      title: '菜单1-1',
+      title: '菜单3-5',
     }, {
-      title: '菜单1-1',
+      title: '菜单3-6',
     }, {
-      title: '菜单1-1',
+      title: '菜单3-7',
     }, {
-      title: '菜单1-1',
+      title: '菜单3-8',
     }, {
-      title: '菜单1-1',
+      title: '菜单3-9',
     }, {
-      title: '菜单1-1',
-    }, {
-      title: '菜单1-1',
+      title: '菜单3-10',
     }]
   }, {
     title: '菜单4（禁止点击）',

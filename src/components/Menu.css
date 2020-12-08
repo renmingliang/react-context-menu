@@ -33,17 +33,21 @@
   min-width: 5em;
   max-width: 13em;
 }
-.JfMenu .list li:hover {
+.JfMenu .list li.disabled {
+  color: #c0c4cc;
+  cursor: not-allowed;
+}
+.JfMenu .list li:not(.disabled):hover {
   background: #4fa0f1;
   color: #fff;
 }
-.JfMenu .list li:first-child:hover {
+.JfMenu .list li:not(.disabled):first-child:hover {
   border-radius: 4px 4px 0 0;
 }
-.JfMenu .list li:last-child:hover {
+.JfMenu .list li:not(.disabled):last-child:hover {
   border-radius: 0 0 4px 4px;
 }
-.JfMenu .list li:only-child:hover {
+.JfMenu .list li:not(.disabled):only-child:hover {
   border-radius: 4px;
 }
 
